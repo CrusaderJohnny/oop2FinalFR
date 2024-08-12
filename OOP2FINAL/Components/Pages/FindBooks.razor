@@ -1,0 +1,33 @@
+﻿@page "/findbooks"
+@using Microsoft.Maui.Controls
+
+
+<div class="header">
+    <h1>Find a Book</h1>
+</div>
+<div class="col-form-label-sm">
+    <label>Search Book ISBN:</label>
+    <input />
+</div>
+<div class="col-form-label-sm">
+    <label>Search Book Name:</label>
+    <input />
+</div>
+<div class="col-form-label-sm">
+    <label>Search Book Author:</label>
+    <input />
+</div>
+<div>
+    <select>
+        @foreach(FindBooks books in allBooks)
+        {
+            <option></option>
+        }
+    </select>
+</div>
+
+
+
+@code {
+    private List<FindBooks> allBooks = new List<FindBooks>();
+}
