@@ -4,19 +4,20 @@
 
 <div class="header">
     <h1>Find a Book</h1>
-</div>
-<div class="col-form-label-sm">
+
     <label>Search Book ISBN:</label>
     <input />
-</div>
-<div class="col-form-label-sm">
+
     <label>Search Book Name:</label>
     <input />
-</div>
-<div class="col-form-label-sm">
+
     <label>Search Book Author:</label>
     <input />
+
+    <label>Found Book Category:</label>
+    <input />
 </div>
+
 <div>
     <select>
         @foreach(FindBooks books in allBooks)
@@ -26,7 +27,25 @@
     </select>
 </div>
 
+<div>
+    <h1>Selected Book</h1>
 
+    <label>Found Book ID:</label>
+    <input/>
+
+    <label>Found Book Name:</label>
+    <input />
+
+    <label>Found Book Author:</label>
+    <input />
+
+    <label>Found Book Category:</label>
+    <input />
+
+    <button>Check out book</button>
+
+    <button>Return Book</button>
+</div>
 
 @code {
     private List<FindBooks> allBooks = new List<FindBooks>();
