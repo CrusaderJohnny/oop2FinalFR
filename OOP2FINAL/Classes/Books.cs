@@ -12,8 +12,8 @@ namespace OOP2FINAL.Classes
         private string isbn;
         private string author;
         private string genre;
-        private string title;
-        private string avaibility;
+        private string bookName;
+        private bool available;
         private string borrow_book;
         private string return_book;
 
@@ -33,15 +33,15 @@ namespace OOP2FINAL.Classes
             get { return genre; }
             set { genre = value; }
         }
-        public string Title
+        public string BookName
         {
-            get { return title; }
-            set { title = value; }
+            get { return bookName; }
+            set { bookName = value; }
         }
-        public string Avaibility
+        public bool Available
         {
-            get { return avaibility; }
-            set { avaibility = value; }
+            get { return available; }
+            set { available = value; }
         }
         public string BorrowBook
         {
@@ -54,16 +54,18 @@ namespace OOP2FINAL.Classes
             set { return_book = value; }
         }
         //constructor with inputs
-        public Books(string isbn, string author, string genre, string title, string available, string borrow_book, string return_book)
+        public Books(string isbn, string author, string genre, string title, bool available, string borrow_book, string return_book)
         {
             this.Isbn = isbn;
             this.Author = author;
             this.Genre = genre;
-            this.Title = title;
-            this.Avaibility = available;
+            this.BookName = title;
+            this.Available = available;
             this.BorrowBook = borrow_book;
             this.ReturnBook = return_book;
         }
+
+        //null constructor no inputs
         public Books()   
         {
 
@@ -75,8 +77,8 @@ namespace OOP2FINAL.Classes
             {
                 return "";
             }
-            return $"{Isbn},{Author},{Genre},{Title},{Avaibility},{BorrowBook},{ReturnBook}";
+            return $"{Isbn},{Author},{Genre},{BookName},{Available},{BorrowBook},{ReturnBook}";
         }
-        //null constructor no inputs
+     
     }
 }
