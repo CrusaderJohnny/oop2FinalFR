@@ -6,21 +6,21 @@
     <h1>Find a Book</h1>
 
     <label>Search Book ISBN:</label>
-    <input />
+    <input @bind-value="searchID"/>
 
     <label>Search Book Name:</label>
-    <input />
+    <input @bind-value="searchName"/>
 
     <label>Search Book Author:</label>
-    <input />
+    <input @bind-value="searchAuthor"/>
 
     <label>Found Book Category:</label>
-    <input />
+    <input @bind-value="searchCategory"/>
 </div>
 
 <div>
     <select>
-        @foreach(FindBooks books in allBooks)
+        @foreach(FindBooks books in foundBooks)
         {
             <option></option>
         }
@@ -31,16 +31,19 @@
     <h1>Selected Book</h1>
 
     <label>Found Book ID:</label>
-    <input/>
+    <input @bind-value="foundID"/>
 
     <label>Found Book Name:</label>
-    <input />
+    <input @bind-value="foundName"/>
 
     <label>Found Book Author:</label>
-    <input />
+    <input @bind-value="foundAuthor"/>
 
     <label>Found Book Category:</label>
-    <input />
+    <input @bind-value="foundCategory"/>
+
+    <label>Available for Checkout:</label>
+    <input @bind-value="foundAvailable"/>
 
     <button>Check out book</button>
 
@@ -48,6 +51,43 @@
 </div>
 
 @code {
-    private List<FindBooks> allBooks = new List<FindBooks>();
+    private List<FindBooks> foundBooks = new List<FindBooks>();
+    private string searchID { get; set; } = string.Empty;
+    private string searchName { get; set; } = string.Empty;
+    private string searchAuthor { get; set; } = string.Empty;
+    private string searchCategory { get; set; } = string.Empty;
+    private string foundID { get; set; } = string.Empty;
+    private string foundName { get; set; } = string.Empty;
+    private string foundAuthor { get; set; } = string.Empty;
+    private string foundCategory { get; set; } = string.Empty;
+    private string foundAvailable { get; set; } = string.Empty;
+    private string? errMess;
+
+
+    protected override void OnInitialized()
+    {
+        searchID = "Any";
+        searchName = "Any";
+        searchAuthor = "Any";
+        searchCategory = "Any";
+    }
+    void errorFix()
+    {
+        errMess = null;
+    }
+    void SearchBooks()
+    {
+
+    }
+    void CheckoutBook()
+    {
+
+    }
+    void LoadBookInfo()
+    {
+        
+    }
+
+
 
 }
