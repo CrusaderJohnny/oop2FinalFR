@@ -8,5 +8,10 @@ namespace OOP2FINAL.Classes
 {
     internal class Books
     {
+        // getters and setters
+
+        //constructor with inputs
+
+        //null constructor no inputs
     }
 }
