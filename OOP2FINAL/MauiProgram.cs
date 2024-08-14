@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using OOP2FINAL.Classes;
 
 namespace OOP2FINAL
 {
@@ -20,6 +21,7 @@ namespace OOP2FINAL
     		builder.Services.AddBlazorWebViewDeveloperTools();
     		builder.Logging.AddDebug();
 #endif
+            builder.Services.AddSingleton<BooksManager>();
 
             return builder.Build();
         }

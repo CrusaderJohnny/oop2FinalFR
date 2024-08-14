@@ -72,10 +72,6 @@ namespace OOP2FINAL.Classes
                         book.Available = false;
                         checkedOut = true;
                     }
-                    else
-                    {
-                        throw new Exception("Books is not available for checkout");
-                    }
                 }
             }
             if (checkedOut)
@@ -85,6 +81,29 @@ namespace OOP2FINAL.Classes
         }
 
         //check in book, changing availability status
+        internal void CheckinBook(string bookID)
+        {
+            bool checkedIn = false;
+            foreach (Books book in books)
+            {
+                if (book.Isbn == bookID)
+                {
+                    if (!book.Available)
+                    {
+                        book.Available = true;
+                        checkedIn = true;
+                    }
+                    else
+                    {
+                        throw new Exception("Book is already checked in");
+                    }
+                }
+            }
+            if(checkedIn)
+            {
+                SaveBooks();
+            }
+        }
 
         //save books info to database
         internal void SaveBooks()

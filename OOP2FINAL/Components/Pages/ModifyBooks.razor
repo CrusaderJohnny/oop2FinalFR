@@ -1,74 +1,101 @@
 ﻿@page "/modifybooks"
+@using Microsoft.Maui.Controls
+@using OOP2FINAL.Classes
+@inject BooksManager modifyManager
 
-<div>
+@* <div>
     <h1>Add a Book</h1>
 
     <label>Add Book ID:</label>
-    <input />
+    <input @bind-value="modifyID" />
 
     <label>Add Book Name:</label>
-    <input />
+    <input @bind-value="modifyName" />
 
     <label>Add Book Author:</label>
-    <input />
+    <input @bind-value="modifyAuthor" />
 
     <label>Add Book Category:</label>
-    <input />
+    <input @bind-value="modifyCategory" />
 
     <button>Add Book</button>
 </div>
-
+ *@
 
 <div>
     <h1>Modify Book Search</h1>
 
     <label>Modify Book ID:</label>
-    <input />
+    <input @bind-value="modifyID" />
 
     <label>Modify Book Name:</label>
-    <input />
+    <input @bind-value="modifyName" />
 
     <label>Modify Book Author:</label>
-    <input />
+    <input @bind-value="modifyAuthor" />
 
     <label>Modify Book Category:</label>
-    <input />
+    <input @bind-value="modifyCategory" />
 
     <button>Search for Book</button>
 </div>
-<select>
-    <option>Found Books appears here</option>
-</select>
-
+<div>
+    <select @bind="foundModID">
+        @foreach(Books book in modifyBooks)
+        {
+            <option value="@book.Isbn">@book</option>
+        }
+    </select>
+</div>
 
 <div>
     <h1>Found Book info to Modify</h1>
-</div>
-<div>
+
     <label>Modify Book ID:</label>
-    <input />
-</div>
+    <input @bind-value="fModID" />
 
-<div>
     <label>Modify Book Name:</label>
-    <input />
-</div>
+    <input @bind-value="fModName" />
 
-<div>
     <label>Modify Book Author:</label>
-    <input />
-</div>
+    <input @bind-value="fModAuthor" />
 
-<div>
     <label>Modify Book Category:</label>
-    <input />
-</div>
-<div>
+    <input @bind-value="fModCategory" />
+
     <button>Save Changes</button>
 </div>
 
 
 @code {
+    private List<Books> modifyBooks = new List<Books>();
+    private string modifyID { get; set; } = string.Empty;
+    private string modifyName { get; set; } = string.Empty;
+    private string modifyAuthor { get; set; } = string.Empty;
+    private string modifyCategory { get; set; } = string.Empty;
+    private string fModID { get; set; } = string.Empty;
+    private string fModName { get; set; } = string.Empty;
+    private string fModAuthor { get; set; } = string.Empty;
+    private string fModCategory { get; set; } = string.Empty;
+    string? foundModID;
 
+
+    protected override void OnInitialized()
+    {
+        modifyID = "Any";
+        modifyName = "Any";
+        modifyAuthor = "Any";
+        modifyCategory = "Any";
+    }
+
+    void SearchBooks()
+    {
+
+    }
+
+    void LoadBookInfo()
+    {
+
+    }
 
 }
