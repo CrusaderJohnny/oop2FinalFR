@@ -65,6 +65,9 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Folder Include="Resources\database\" />
+      <Folder Include="Resources\admin\" />
+      <Folder Include="Resources\sqlscripts\" />
       <Folder Include="Services\" />
     </ItemGroup>
 
