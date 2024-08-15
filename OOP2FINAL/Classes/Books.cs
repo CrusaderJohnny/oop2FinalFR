@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace OOP2FINAL.Classes
 {
-    internal class Books
+    public class Books
     {
         // getters and setters
         private string isbn;
@@ -54,15 +54,13 @@ namespace OOP2FINAL.Classes
             set { return_book = value; }
         }
         //constructor with inputs
-        public Books(string isbn, string author, string genre, string title, bool available, string borrow_book, string return_book)
+        public Books(string isbn, string title, string author, string genre, bool available)
         {
             this.Isbn = isbn;
             this.Author = author;
             this.Genre = genre;
             this.BookName = title;
             this.Available = available;
-            this.BorrowBook = borrow_book;
-            this.ReturnBook = return_book;
         }
 
         //null constructor no inputs
@@ -77,7 +75,7 @@ namespace OOP2FINAL.Classes
             {
                 return "";
             }
-            return $"{Isbn},{Author},{Genre},{BookName},{Available},{BorrowBook},{ReturnBook}";
+            return $"{Isbn},{Author},{Genre},{BookName},{Available}";
         }
      
     }

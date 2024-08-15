@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CsvHelper;
 
 namespace OOP2FINAL.Classes
 {
@@ -17,7 +19,24 @@ namespace OOP2FINAL.Classes
         //Load data to list from database
         internal void LoadBooks()
         {
-
+            books.Clear();
+            string csvFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../../../..", "resources", "data", "books.csv");
+            try
+            {
+                using(var sr = new StreamReader(csvFile))
+                using(var csv = new CsvReader(sr, CultureInfo.InvariantCulture))
+                {
+                    while (csv.Read())
+                    {
+                        books.Add(new Books(csv.GetField(0), csv.GetField(1), csv.GetField(2), csv.GetField(3), bool.Parse(csv.GetField(4))));
+                    }
+                    return;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error reading data: {ex.Message}");
+            }
         }
 
 
@@ -27,21 +46,24 @@ namespace OOP2FINAL.Classes
             searchName = searchName.ToLower();
             searchAuthor = searchAuthor.ToLower();
             searchCategory = searchCategory.ToLower();
-            List<Books> books = new List<Books>();
+            List<Books> bk = new List<Books>();
             foreach (Books book in books)
             {
-                if(book.Isbn == searchID || searchID == "any")
+                if(book.Isbn == searchID || searchID == "Any")
                 {
                     if(book.BookName == searchName || searchName == "any")
                     {
                         if(book.Author == searchAuthor || searchAuthor == "any")
                         {
-                            books.Add(book);
+                            if(book.Genre == searchCategory || searchCategory == "any")
+                            {
+                                bk.Add(book);
+                            } 
                         }
                     }
                 }
             }
-            return books;
+            return bk;
         }
 
         //returns individual book from search
@@ -108,7 +130,27 @@ namespace OOP2FINAL.Classes
         //save books info to database
         internal void SaveBooks()
         {
+            try
+            {
+                List<string> savedBooks = new List<string>();
+                string csvFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../../../..", "resources", "data", "books.csv");
+                foreach (Books book in books)
+                {
+                    string[] items = [book.Isbn, book.BookName, book.Author, book.Genre, book.Available.ToString()];
+                    savedBooks.Add(string.Join(",", items));
+                }
+                if(savedBooks.Count() > 0)
+                {
+                    File.WriteAllLines(csvFile, savedBooks);
+                    LoadBooks();
+                }
 
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error reading data {ex.Message}");
+                return;
+            }
         }
     }
 }
