@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CsvHelper;
 
 namespace OOP2FINAL.Classes
 {
@@ -17,7 +19,24 @@ namespace OOP2FINAL.Classes
         //Load data to list from database
         internal void LoadBooks()
         {
-
+            books.Clear();
+            string csvFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../../../..", "resources", "data", "books.csv");
+            try
+            {
+                using(var sr = new StreamReader(csvFile))
+                using(var csv = new CsvReader(sr, CultureInfo.InvariantCulture))
+                {
+                    while (csv.Read())
+                    {
+                        books.Add(new Books(csv.GetField(0), csv.GetField(1), csv.GetField(2), csv.GetField(3), bool.Parse(csv.GetField(4))));
+                    }
+                    return;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error reading data: {ex.Message}");
+            }
         }
 
 
@@ -27,21 +46,24 @@ namespace OOP2FINAL.Classes
             searchName = searchName.ToLower();
             searchAuthor = searchAuthor.ToLower();
             searchCategory = searchCategory.ToLower();
-            List<Books> books = new List<Books>();
+            List<Books> bk = new List<Books>();
             foreach (Books book in books)
             {
-                if(book.Isbn == searchID || searchID == "any")
+                if(book.Isbn == searchID || searchID == "Any")
                 {
-                    if(book.BookName == searchName || searchName == "any")
+                    if (book.BookName == searchName.ToLower() || searchName == "any")
                     {
-                        if(book.Author == searchAuthor || searchAuthor == "any")
+                        if(book.Author == searchAuthor.ToLower() || searchAuthor == "any")
                         {
-                            books.Add(book);
+                            if(book.Genre == searchCategory.ToLower() || searchCategory == "any")
+                            {
+                                bk.Add(book);
+                            } 
                         }
                     }
                 }
             }
-            return books;
+            return bk;
         }
 
         //returns individual book from search
@@ -72,10 +94,6 @@ namespace OOP2FINAL.Classes
                         book.Available = false;
                         checkedOut = true;
                     }
-                    else
-                    {
-                        throw new Exception("Books is not available for checkout");
-                    }
                 }
             }
             if (checkedOut)
@@ -85,11 +103,94 @@ namespace OOP2FINAL.Classes
         }
 
         //check in book, changing availability status
+        internal void CheckinBook(string bookID)
+        {
+            bool checkedIn = false;
+            foreach (Books book in books)
+            {
+                if (book.Isbn == bookID)
+                {
+                    if (!book.Available)
+                    {
+                        book.Available = true;
+                        checkedIn = true;
+                    }
+                    else
+                    {
+                        throw new Exception("Book is already checked in");
+                    }
+                }
+            }
+            if(checkedIn)
+            {
+                SaveBooks();
+            }
+        }
 
         //save books info to database
         internal void SaveBooks()
         {
+            try
+            {
+                List<string> savedBooks = new List<string>();
+                string csvFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../../../..", "resources", "data", "books.csv");
+                foreach (Books book in books)
+                {
+                    string[] items = [book.Isbn, book.BookName, book.Author, book.Genre, book.Available.ToString()];
+                    savedBooks.Add(string.Join(",", items));
+                }
+                if(savedBooks.Count() > 0)
+                {
+                    File.WriteAllLines(csvFile, savedBooks);
+                    LoadBooks();
+                }
 
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error reading data {ex.Message}");
+                return;
+            }
+        }
+        
+        internal void SaveBooks(Books replaceBook)
+        {
+            try
+            {
+                List<string> modifiedBooks = new List<string>();
+                string csvFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../../../..", "resources", "data", "books.csv");
+
+                foreach (Books book in books)
+                {
+                    if(book.Isbn == replaceBook.Isbn)
+                    {
+                        string[] items = [replaceBook.Isbn, replaceBook.BookName, replaceBook.Author, replaceBook.Genre, replaceBook.Available.ToString()];
+                        modifiedBooks.Add(string.Join(",", items));
+                    }
+                    else
+                    {
+                        string[] items = [book.Isbn, book.BookName, book.Author, book.Genre, book.Available.ToString()];
+                        modifiedBooks.Add(string.Join(",", items));
+                    }
+                }
+                if(modifiedBooks.Count() > 0)
+                {
+                    File.WriteAllLines(csvFile, modifiedBooks);
+                    LoadBooks();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error reading data {ex.Message}");
+                return;
+            }
+        }
+        internal void AddBooks(Books newBook)
+        {
+            books.Add(newBook);
+            SaveBooks();
+            return;
         }
     }
 }
+ 

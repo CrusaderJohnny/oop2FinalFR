@@ -1,74 +1,153 @@
 ﻿@page "/modifybooks"
-
-<div>
-    <h1>Add a Book</h1>
-
-    <label>Add Book ID:</label>
-    <input />
-
-    <label>Add Book Name:</label>
-    <input />
-
-    <label>Add Book Author:</label>
-    <input />
-
-    <label>Add Book Category:</label>
-    <input />
-
-    <button>Add Book</button>
-</div>
+@using Microsoft.Maui.Controls
+@using Microsoft.Maui.Controls.Handlers
+@using OOP2FINAL.Classes
+@inject BooksManager modifyManager
 
 
 <div>
     <h1>Modify Book Search</h1>
 
     <label>Modify Book ID:</label>
-    <input />
+    <input @bind-value="modifyID" />
 
     <label>Modify Book Name:</label>
-    <input />
+    <input @bind-value="modifyName" />
 
     <label>Modify Book Author:</label>
-    <input />
+    <input @bind-value="modifyAuthor" />
 
     <label>Modify Book Category:</label>
-    <input />
+    <input @bind-value="modifyCategory" />
 
-    <button>Search for Book</button>
+    <button @onclick="SearchBooks">Search for Book</button>
 </div>
-<select>
-    <option>Found Books appears here</option>
-</select>
-
+<div>
+    <select @bind="foundModID">
+        @foreach(Books book in modifyBooks)
+        {
+            <option value="@book.Isbn">@book</option>
+        }
+    </select>
+</div>
 
 <div>
     <h1>Found Book info to Modify</h1>
-</div>
-<div>
+
     <label>Modify Book ID:</label>
-    <input />
-</div>
+    <input @bind-value="foundModID" />
 
-<div>
     <label>Modify Book Name:</label>
-    <input />
-</div>
+    <input @bind-value="fModName" />
 
-<div>
     <label>Modify Book Author:</label>
-    <input />
-</div>
+    <input @bind-value="fModAuthor" />
 
-<div>
     <label>Modify Book Category:</label>
-    <input />
+    <input @bind-value="fModCategory" />
 </div>
 <div>
-    <button>Save Changes</button>
+
+</div>
+<div class="buttons">
+    <button @onclick="SaveChanges">Save Changes</button>
+</div>
+<div>
+    @if (!string.IsNullOrEmpty(errMess))
+    {
+        <div class="alert alert-danger">@errMess</div>
+    }
+    @if (!string.IsNullOrEmpty(victoryMessage))
+    {
+        <div class="alert alertalert-success">@victoryMessage</div>
+    }
 </div>
 
 
 @code {
+    private List<Books> modifyBooks = new List<Books>();
+    private string modifyID { get; set; } = string.Empty;
+    private string modifyName { get; set; } = string.Empty;
+    private string modifyAuthor { get; set; } = string.Empty;
+    private string modifyCategory { get; set; } = string.Empty;
+    private string fModID { get; set; } = string.Empty;
+    private string fModName { get; set; } = string.Empty;
+    private string fModAuthor { get; set; } = string.Empty;
+    private string fModCategory { get; set; } = string.Empty;
+    private bool fModAvailable { get; set; }
+    private string? errMess;
+    private string? victoryMessage;
+    private string? _foundModID;
+    string? foundModID
+    {
+        get { return _foundModID; }
+        set
+        {
+            _foundModID = value;
+            modifyBook = modifyManager.FindBooks(_foundModID);
+            LoadBookInfo();
+        }
+    }
 
+    Books modifyBook;
+
+    protected override void OnInitialized()
+    {
+        modifyManager.LoadBooks();
+        modifyID = "Any";
+        modifyName = "Any";
+        modifyAuthor = "Any";
+        modifyCategory = "Any";
+        modifyBook = new Books();
+    }
+
+    void SearchBooks()
+    {
+        modifyBooks = modifyManager.FindBooks(modifyID, modifyName, modifyAuthor, modifyCategory);
+        if(modifyBooks.Count() > 0)
+        {
+            modifyBook = modifyBooks[0];
+            foundModID = modifyBook.Isbn;
+            LoadBookInfo();
+        }
+    }
+
+    void LoadBookInfo()
+    {
+        fModID = modifyBook.Isbn;
+        fModName = modifyBook.BookName;
+        fModAuthor = modifyBook.Author;
+        fModCategory = modifyBook.Genre;
+        fModAvailable = modifyBook.Available;
+    }
+
+    void SaveChanges()
+    {
+        try
+        {
+            Books books = new Books(foundModID, fModName, fModAuthor, fModCategory, fModAvailable);
+            if (string.IsNullOrEmpty(foundModID))
+            {
+                throw new Exception("A book Id must be selected");
+            }
+            if (string.IsNullOrEmpty(books.ToString()))
+            {
+                throw new Exception("No matching books found");
+            }
+            modifyManager.SaveBooks(books);
+            victoryMessage = $"Succusfully saved new info for {books.BookName}";
+            LoadBookInfo();
+            errorFix();
+        }
+        catch (Exception ex)
+        {
+            errMess = ex.Message;
+        }
+    }
+
+    void errorFix()
+    {
+        errMess = null;
+    }
 
 }

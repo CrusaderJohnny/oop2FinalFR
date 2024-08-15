@@ -1,6 +1,7 @@
 ﻿@page "/findbooks"
 @using Microsoft.Maui.Controls
 @using OOP2FINAL.Classes
+@inject BooksManager booksManager
 
 
 <div class="header">
@@ -17,13 +18,15 @@
 
     <label>Found Book Category:</label>
     <input @bind-value="searchCategory"/>
+
+    <button @onclick="SearchBooks">Search Books</button>
 </div>
 
 <div>
-    <select>
-        @foreach(FindBooks books in foundBooks)
+    <select @bind="foundID">
+        @foreach(Books book in foundBooks)
         {
-            <option></option>
+            <option value="@book.Isbn">@book</option>
         }
     </select>
 </div>
@@ -32,61 +35,158 @@
     <h1>Selected Book</h1>
 
     <label>Found Book ID:</label>
-    <input @bind-value="foundID"/>
+    <input @bind-value="foundID" readonly/>
 
     <label>Found Book Name:</label>
-    <input @bind-value="foundName"/>
+    <input @bind-value="foundName" readonly/>
 
     <label>Found Book Author:</label>
-    <input @bind-value="foundAuthor"/>
+    <input @bind-value="foundAuthor" readonly/>
 
     <label>Found Book Category:</label>
-    <input @bind-value="foundCategory"/>
+    <input @bind-value="foundCategory" readonly/>
 
     <label>Available for Checkout:</label>
-    <input @bind-value="foundAvailable"/>
+    <input @bind-value="foundAvailable" readonly/>
 
-    <button>Check out book</button>
+    <button @onclick="CheckOut">Check out book</button>
 
-    <button>Return Book</button>
+    <button @onclick="CheckIn">Return Book</button>
+</div>
+<div>
+    @if(!string.IsNullOrEmpty(errMess))
+    {
+        <div class="alert alert-danger">@errMess</div>
+    }
+    @if(!string.IsNullOrEmpty(victoryMessage))
+    {
+        <div class="alert alertalert-success">@victoryMessage</div>
+    }
 </div>
 
 @code {
-    private List<FindBooks> foundBooks = new List<FindBooks>();
+    private List<Books> foundBooks = new List<Books>();
     private string searchID { get; set; } = string.Empty;
     private string searchName { get; set; } = string.Empty;
     private string searchAuthor { get; set; } = string.Empty;
     private string searchCategory { get; set; } = string.Empty;
-    private string foundID { get; set; } = string.Empty;
     private string foundName { get; set; } = string.Empty;
     private string foundAuthor { get; set; } = string.Empty;
     private string foundCategory { get; set; } = string.Empty;
     private string foundAvailable { get; set; } = string.Empty;
+    private string foundBookID { get; set; } = string.Empty;
     private string? errMess;
+    private string? victoryMessage;
+    private string? _foundID;
+    string? foundID
+    {
+        get { return _foundID; }
+        set
+        {
+            _foundID = value;
+            selectedBook = booksManager.FindBooks(_foundID);
+            LoadBookInfo();
+        }
+    }
 
+    Books selectedBook;
 
+    // initializes functions and values on page load
     protected override void OnInitialized()
     {
+        booksManager.LoadBooks();
         searchID = "Any";
         searchName = "Any";
         searchAuthor = "Any";
         searchCategory = "Any";
+        selectedBook = new Books();
     }
+
+    //fixes errors by resetting error message to null
     void errorFix()
     {
         errMess = null;
     }
+
+    //searches books manager for matching books, returns them and fills the select options list with matching entries
     void SearchBooks()
     {
-
+        foundBooks = booksManager.FindBooks(searchID, searchName, searchAuthor, searchCategory);
+        if(foundBooks.Count() > 0)
+        {
+            selectedBook = foundBooks[0];
+            foundID = selectedBook.Isbn;
+            LoadBookInfo();
+        }
     }
-    void CheckoutBook()
-    {
 
-    }
+    // Loads found book info to the on page variables
     void LoadBookInfo()
     {
-        
+        foundBookID = selectedBook.Isbn;
+        foundName = selectedBook.BookName;
+        foundAuthor = selectedBook.Author;
+        foundCategory = selectedBook.Genre;
+        foundAvailable = selectedBook.Available.ToString();
+
+    }
+
+    //checks out the book, throws error messages if things are not correct
+    void CheckOut()
+    {
+        try
+        {
+            Books books = booksManager.FindBooks(foundID);
+            if(string.IsNullOrEmpty(foundID))
+            {
+                throw new Exception("A book Id must be selected");
+            }
+            if(string.IsNullOrEmpty(books.ToString()))
+            {
+                throw new Exception("No matching books found");
+            }
+            if (books.Available == false)
+            {
+                throw new Exception("Book not available for checkout");
+            }
+            booksManager.CheckoutBook(foundID);
+            booksManager.SaveBooks();
+            victoryMessage = $"Succusfully checked out {books.BookName}";
+            LoadBookInfo();
+            errorFix();
+        }
+        catch (Exception ex)
+        {
+            errMess = ex.Message;
+        }
+    }
+    void CheckIn()
+    {
+        try
+        {
+            Books books = booksManager.FindBooks(foundID);
+            if (string.IsNullOrEmpty(foundID))
+            {
+                throw new Exception("A book Id must be selected");
+            }
+            if (string.IsNullOrEmpty(books.ToString()))
+            {
+                throw new Exception("No matching books found");
+            }
+            if (books.Available == true)
+            {
+                throw new Exception("Book not available for checkout");
+            }
+            booksManager.CheckinBook(foundID);
+            victoryMessage = $"Succusfully checked in {books.BookName}";
+            booksManager.SaveBooks();
+            LoadBookInfo();
+            errorFix();
+        }
+        catch (Exception ex)
+        {
+            errMess = ex.Message;
+        }
     }
 
 
