@@ -51,11 +51,11 @@ namespace OOP2FINAL.Classes
             {
                 if(book.Isbn == searchID || searchID == "Any")
                 {
-                    if(book.BookName == searchName || searchName == "any")
+                    if (book.BookName == searchName.ToLower() || searchName == "any")
                     {
-                        if(book.Author == searchAuthor || searchAuthor == "any")
+                        if(book.Author == searchAuthor.ToLower() || searchAuthor == "any")
                         {
-                            if(book.Genre == searchCategory || searchCategory == "any")
+                            if(book.Genre == searchCategory.ToLower() || searchCategory == "any")
                             {
                                 bk.Add(book);
                             } 
