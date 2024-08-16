@@ -1,0 +1,93 @@
+﻿@page "/addnewbook"
+@using Microsoft.Maui.Controls
+@using OOP2FINAL.Classes
+@inject BooksManager addBooksManager
+
+<div>
+    <h1>Add a new Book</h1>
+
+    <label>Add Book ID:</label>
+    <input @bind-value="addID" />
+
+    <label>Add Book Name:</label>
+    <input @bind-value="addName" />
+
+    <label>Add Book Author:</label>
+    <input @bind-value="addAuthor" />
+
+    <label>Add Book Category:</label>
+    <select @bind="addCategory">
+        @foreach(string value in acceptedCategories)
+        {
+            <option value="@value">@value</option>
+        }
+    </select>
+</div>
+<div>
+    <button @onclick="CheckAndAddBook">Add Book</button>
+</div>
+<div>
+    @if (!string.IsNullOrEmpty(errMess))
+    {
+        <div class="alert alert-danger">@errMess</div>
+    }
+    @if (!string.IsNullOrEmpty(victoryMessage))
+    {
+        <div class="alert alertalert-success">@victoryMessage</div>
+    }
+</div>
+
+@code {
+    private List<Books> checkBooks = new List<Books>();
+    private string addID { get; set; } = string.Empty;
+    private string addName { get; set; } = string.Empty;
+    private string addAuthor { get; set; } = string.Empty;
+    private string addCategory { get; set; } = string.Empty;
+    private string defaultID = "Any";
+    private string defaultName = "Any";
+    private string defaultAuthor = "Any";
+    private string defaultCategory = "Any";
+    private string? errMess;
+    private string? victoryMessage;
+    private string[] acceptedCategories = ["Young Adult", "Inspirational", "Dystopian", "Classic", "Romance", "Coming-of-age", "Fantasy", "Science Fiction", "Horror"];
+
+    Books addNewBook;
+
+
+    void CheckAndAddBook() 
+    {
+        addNewBook.Isbn = addID;
+        addNewBook.BookName = addName;
+        addNewBook.Author = addAuthor;
+        addNewBook.Genre = addCategory;
+        addNewBook.Available = true;
+        foreach(Books book in checkBooks) 
+        {
+            if (book.Isbn == addNewBook.Isbn) 
+            {
+                errMess = $"ISBN: {addNewBook.Isbn} already exists";
+            }
+        }
+        addBooksManager.AddBooks(addNewBook);
+        victoryMessage = $"{addNewBook.BookName} Added";
+    }
+
+    protected override void OnInitialized() 
+    {
+        addBooksManager.LoadBooks();
+        SearchBooks();
+        addNewBook = new Books();
+    }
+
+    void errorFix()
+    {
+        errMess = null;
+    }
+
+
+    void SearchBooks()
+    {
+        checkBooks = addBooksManager.FindBooks(defaultID, defaultName, defaultAuthor, defaultCategory);
+    }
+
+}

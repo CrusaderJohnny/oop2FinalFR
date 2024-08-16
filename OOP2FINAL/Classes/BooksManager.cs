@@ -152,5 +152,45 @@ namespace OOP2FINAL.Classes
                 return;
             }
         }
+        
+        internal void SaveBooks(Books replaceBook)
+        {
+            try
+            {
+                List<string> modifiedBooks = new List<string>();
+                string csvFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../../../..", "resources", "data", "books.csv");
+
+                foreach (Books book in books)
+                {
+                    if(book.Isbn == replaceBook.Isbn)
+                    {
+                        string[] items = [replaceBook.Isbn, replaceBook.BookName, replaceBook.Author, replaceBook.Genre, replaceBook.Available.ToString()];
+                        modifiedBooks.Add(string.Join(",", items));
+                    }
+                    else
+                    {
+                        string[] items = [book.Isbn, book.BookName, book.Author, book.Genre, book.Available.ToString()];
+                        modifiedBooks.Add(string.Join(",", items));
+                    }
+                }
+                if(modifiedBooks.Count() > 0)
+                {
+                    File.WriteAllLines(csvFile, modifiedBooks);
+                    LoadBooks();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error reading data {ex.Message}");
+                return;
+            }
+        }
+        internal void AddBooks(Books newBook)
+        {
+            books.Add(newBook);
+            SaveBooks();
+            return;
+        }
     }
 }
+ 
